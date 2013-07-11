@@ -1,0 +1,174 @@
+\documentclass{beamer}
+\mode<presentation>
+{
+  \usetheme{Singapore}
+  \setbeamercovered{transparent}
+}
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{times}
+\usepackage[T1]{fontenc}
+\usepackage{algorithm2e}
+\usepackage{algorithmic}
+\usepackage{float}
+\usepackage{amsmath}
+
+
+\title[Short Paper Title] % (optional, use only with long paper titles)
+{Network Learning}
+
+\author[Author, Another] % (optional, use only with lots of authors)
+{Steve Poulson}
+
+\institute[Universities of Somewhere and Elsewhere] % (optional, but mostly needed)
+{STG}
+
+\date[CFP 2003] % (optional, should be abbreviation of conference name)
+{28 November 2012}
+\subject{Theoretical Computer Science}
+\pgfdeclareimage[height=1cm]{university-logo}{cisco.png}
+\logo{\pgfuseimage{university-logo}}
+
+\AtBeginSubsection[]
+{
+  \begin{frame}<beamer>{Outline}
+    \tableofcontents[currentsection,currentsubsection]
+  \end{frame}
+}
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command: 
+
+%\beamerdefaultoverlayspecification{<+->}
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Outline}
+  \tableofcontents
+  % You might wish to add the option [pausesections]
+\end{frame}
+
+\section{Motivation}
+
+\subsection{How to simulate the growth of power law graph}
+
+\begin{frame}{Algorithm}
+\begin{algorithm}[H]
+ \SetAlgoLined
+ \KwData{Directed Graph A}
+ \KwResult{Digraph B with n new vertices, m new edges}
+ \While{not n vertices}
+ {
+ 	pick random edge $(v_1,v_2)$ from A where $v_1$ $\in$ B \\
+ 	add $v_2$
+ 	add $(v_1,v_2)$ to graph B\\
+ }
+  \While{not m edges added}
+  {
+  	pick random edge $(v_1,v_2)$ from A where $v_1,v_2$ $\in$ B \\
+ 	add $(v_1,v_2)$ to graph B\\
+  }
+ \caption{Grow}
+\end{algorithm}
+\end{frame}
+\subsection{New Link / Node prediction}
+
+\begin{frame}{Supervised learning problem}
+
+
+  \begin{itemize}
+	\item $ \mathbf{Y}\leftarrow \mathbf{A^{t+1} }- \mathbf{A^t} $ 
+	\pause
+	\item $ \min(L ( f(\phi(\mathbf{A^t})) , \mathbf{Y})))$
+	\pause
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Feature Function $\phi$}
+
+Maps $\mathbf{A}_{i,j} \rightarrow (x_1 \dots x_n)$  
+
+  \begin{itemize}
+	\item Random Walk between nodes
+	\pause
+	\item Modularity
+	\pause
+	\item Cosine Distance of neighbour list
+	\pause
+	\item Betweeness Centrality
+  \end{itemize}
+\end{frame}
+\subsection{Implementation}
+
+\begin{frame}{Local vs Global}
+
+  \begin{itemize}
+	\item Global features from a 1 million node graph unfeasible  
+	\pause
+	\item Power Law graphs scale invariant so local features should characterize graph 
+	\pause
+	\item Can use Hadoop Map calculates subset of local features, reduce assembles training set which classifier runs on 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Let's try it on a Kaggle competition}
+  \begin{itemize}
+  	\item Prototyped on sklearn / networkx
+   	\item Hadoop cluster on AWS
+   	\item Java: Weka / Hadoop / cern.colt.matrix / Jung
+   	\item Random Forrest classifer beat rest
+  \end{itemize}
+\end{frame}
+
+
+%\begin{frame}{MLE}
+%	\includegraphics[width=5cm]{sf}
+%   \begin{itemize}
+%    	\item degree of vertex $X_i$
+%   	\pause
+%	\item Sample $n \log(\alpha) + n \alpha \log(m) - (\alpha+1) \sum_{i=1}^{n} \log(X_i)$
+%	\pause
+%	\item $\hat{m} = \min_{i} X_i$
+%	\pause
+%	\item $\frac{n}{\alpha} + n \log( \hat{m} ) - \sum_{i=1}^{n} \log(X_i) = 0$
+%	\item $\hat{\alpha} = \frac{n}{\sum_{i=1}^{n} \log(X_i/\hat{m})}$.
+%   \end{itemize}
+%\end{frame}
+
+\begin{frame}{Kaggle Evaluation}
+
+\includegraphics[width=10cm]{kaggle}
+
+  \begin{itemize}
+	\item A bit of fun :)
+	\pause
+	\item  Mean Average Precision @ 10 = 0.71371
+	\pause
+	\item  Within 2\% of winner
+  \end{itemize}
+  
+\end{frame}
+
+
+\section*{Summary}
+
+\begin{frame}{Summary}
+  \begin{itemize}
+\item Power law Sampling gives a time varying dataset
+\item Random Forrest best
+\item Pretty good results
+
+  \end{itemize}
+\end{frame}
+
+
+
+\end{document}
+
+
